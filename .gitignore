@@ -1,0 +1,10 @@
+.DS_Store
+.vscode
+.idea
+node_modules
+npm-debug.log
+servers/gateway/privkey.pem
+cover.out
+privkey.pem
+garson.pem
+ChatService.code-workspace

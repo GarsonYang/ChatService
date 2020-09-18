@@ -1,0 +1,46 @@
+<DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src='javascript.js'></script>
+    </head>
+    <body>
+        <div class="content">
+            <h1> Messages Client</h1>
+            <h2> User Sign In</h2>
+            <div id="form">
+                <div> Email <input type="text" id="Email"></div>
+                <div> Password <input type="password" id="Password"></div>
+                <div id="errMsg"></div>
+            </div>
+            <br>
+            <button onclick="handleSubmit()">Submit!</button>
+        </div>
+    
+    
+        <script type="text/javascript">
+            function handleSubmit() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4) {
+                        if(this.status < 300){
+                            goToMainPage(this.getResponseHeader("Authorization"), this.responseText);
+                        }
+                        else {
+                            handleError(this.responseText);
+                        }
+                    }
+                };
+                
+                var userInfo = {}
+                userInfo["Email"] = document.getElementById("Email").value;
+                userInfo["Password"] = document.getElementById("Password").value;
+    
+                xhttp.open("POST", "https://api.garson.me:443/v1/sessions", true);
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                xhttp.send(JSON.stringify(userInfo));
+            }
+        </script>
+    </body>
+    </html>

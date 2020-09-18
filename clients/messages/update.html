@@ -1,0 +1,46 @@
+<DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src='javascript.js'></script>
+    </head>
+    <bdoy>
+        <div class="content">
+            <h1> Mesages Client</h1>
+            <h2> Update Profile</h2>
+            <div id='form'>
+                <div> New First Name <input type="text" id="FirstName"> </div>
+                <div> New Last Name <input type="text" id="LastName"> </div>
+                <div id="errMsg"></div>
+            </div>
+            <button onclick="update()">submit</button>
+            <button onclick="window.location='main.html'">Back</button>
+        </div>
+
+        <script>
+            function update() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4) {
+                        if(this.status < 300){
+                            goToMainPage(localStorage.getItem("Authorization"), this.responseText);
+                        }
+                        else {
+                            handleError(this.responseText);
+                        }
+                    }
+                };
+                
+                var userInfo = {}
+                userInfo["FirstName"] = document.getElementById("FirstName").value;
+                userInfo["LastName"] = document.getElementById("LastName").value;
+    
+                xhttp.open("PATCH", "https://api.garson.me:443/v1/users/me", true);
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                xhttp.setRequestHeader("Authorization", localStorage.getItem("Authorization"));
+                xhttp.send(JSON.stringify(userInfo));
+            }
+        </script>
+    </bdoy>
+</html>

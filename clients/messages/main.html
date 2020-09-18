@@ -1,0 +1,106 @@
+<DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src='javascript.js'></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <style>
+            .card {
+                max-width: 200px;
+                min-width: 200px;
+                margin-top: 15px;
+                left:10%;
+                right:20%;
+            }
+        </style>
+    </head>
+    <bdoy>
+        <div class="content">
+            <h1> Messages Client</h1>
+            <h2> Welcome!</h2>
+
+            <div> Search: <input type="text" onkeyup="trackInput(this.value)"></div>
+            <div id="errMsg"></div>
+            <div class="card-deck" id="searchResult"></div>
+            <br>
+
+            <div id='userInfo'></div>
+            <br>
+
+            <button onclick="window.location='chatroom.html'">Chatroom</button>
+            <br><br>
+
+            <button onclick="window.location='update.html'">Update Profile</button>
+            <button onclick="signOut()">Sign Out</button>
+        </div>
+    </bdoy>
+
+    <script type="text/javascript">
+        if (localStorage.getItem("Authorization") == null) {
+            alert("Unauthorized! Redirecting back to the home page");
+            window.location.replace("index.html");
+        } else {
+            $(document).ready(function(){
+                $("#userInfo").append('<div>' + 'First Name: ' + localStorage.getItem("firstName") + '<\div>');
+                $("#userInfo").append('<div>' + 'Last Name: ' + localStorage.getItem("lastName") + '<\div>');
+            });
+        }
+
+        function signOut() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    if(this.status < 300){
+                        localStorage.clear();
+                        window.location.replace("index.html");
+                    }
+                    else {
+                        handleError(this.responseText);
+                    }
+                }
+            };
+
+            xhttp.open("DELETE", "https://api.garson.me:443/v1/sessions/mine", true);
+            xhttp.setRequestHeader("Authorization", localStorage.getItem("Authorization"));
+            xhttp.send();
+        }
+
+        function trackInput(str) {
+            if(str.length == 0) {
+                document.getElementById("searchResult").innerHTML="";;
+            }
+
+            xmlhttp=new XMLHttpRequest();
+            xmlhttp.onreadystatechange=function() {
+                if (this.readyState == 4) {
+                    if(this.status < 300){
+                        $("#errMsg").hide();
+                        renderUsers(this.responseText)
+                    }
+                    else {
+                        handleError(this.responseText);
+                    }
+                }
+            }
+
+            xmlhttp.open("GET","https://api.garson.me:443/v1/users?q="+str, true);
+            xmlhttp.setRequestHeader("Content-Type", "application/json");
+            xmlhttp.setRequestHeader("Authorization", localStorage.getItem("Authorization"));
+            xmlhttp.send();
+        }
+
+        function renderUsers(responseText) {
+            $("#searchResult").html("");
+            var users = JSON.parse(responseText);
+            for (i in users) {
+                var htmlString = "<div class='card' > <img class='card-img-top' src='" + users[i].photoURL + 
+                    "?s=200' style='width:100%'> <div class='card-body'> <h5 class='card-title'>" + 
+                    users[i].firstName + " " + users[i].lastName + "</h5> <p class='card-text'> User Name: " 
+                    + users[i].userName + "</p> </div> </div>";
+                $("#searchResult").append(htmlString);
+            }
+        }
+    </script>
+</html>
